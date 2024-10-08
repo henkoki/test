@@ -23,6 +23,7 @@ const ResultsPage = () => {
 
   const fetchData = useCallback(async () => {
     if (apiCallMade.current || apiCallStatus !== 'idle') return;
+	}, [location.search, apiCallStatus]); 
     
     setApiCallStatus('pending');
     const searchParams = new URLSearchParams(location.search);
