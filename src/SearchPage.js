@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const SearchPage = () => {
-  const [venueName, setVenueName] = useState('');
-  const [venueAddress, setVenueAddress] = useState('');
+  const [gymName, setGymName] = useState('');
+  const [gymAddress, setGymAddress] = useState('');
+  const [autocomplete, setAutocomplete] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,62 +24,63 @@ const SearchPage = () => {
     if (!window.google) return;
 
     const autocomplete = new window.google.maps.places.Autocomplete(
-      document.getElementById('venue-input'),
-      {
-        types: ['establishment'],
-        strictBounds: false,
-        fields: ['name', 'formatted_address', 'geometry', 'types'],
-      }
+      document.getElementById('gym-name-input'),
+      { types: ['establishment'] }
     );
 
     autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace();
       if (!place.geometry) return;
 
-      // Check if the selected place is a gym, fitness center, or health club
-      const relevantTypes = ['gym', 'health', 'fitness'];
-      const isRelevantPlace = place.types.some(type => 
-        relevantTypes.some(relevantType => type.includes(relevantType))
-      );
-
-      if (isRelevantPlace) {
-        setVenueName(place.name);
-        setVenueAddress(place.formatted_address);
-      } else {
-        alert('Please select a gym, fitness center, or health club.');
-      }
+      setGymName(place.name);
+      setGymAddress(place.formatted_address);
     });
+
+    setAutocomplete(autocomplete);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (venueName && venueAddress) {
-      navigate(`/results?name=${encodeURIComponent(venueName)}&address=${encodeURIComponent(venueAddress)}`);
-    } else {
-      alert('Please select a valid gym, fitness center, or health club.');
+    if (gymName && gymAddress) {
+      navigate(`/results?name=${encodeURIComponent(gymName)}&address=${encodeURIComponent(gymAddress)}`);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">GymSpotCheck</h1>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="venue-input" className="block text-sm font-medium text-gray-700 mb-1">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
+        <h1 className="text-3xl font-bold mb-8 text-center text-blue-600">GymSpotCheck</h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="gym-name-input" className="block text-lg font-medium text-gray-700 mb-2">
               Gym, Fitness Center, or Health Club
             </label>
             <input
-              id="venue-input"
+              id="gym-name-input"
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Search for a gym or fitness center"
+              value={gymName}
+              onChange={(e) => setGymName(e.target.value)}
+              className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Search for a gym"
               required
+            />
+          </div>
+          <div>
+            <label htmlFor="gym-address-input" className="block text-lg font-medium text-gray-700 mb-2">
+              Gym Address
+            </label>
+            <input
+              id="gym-address-input"
+              type="text"
+              value={gymAddress}
+              readOnly
+              className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md bg-gray-100"
+              placeholder="Address will appear here"
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="w-full bg-blue-600 text-white py-3 px-6 rounded-md text-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             See Foot Traffic
           </button>
