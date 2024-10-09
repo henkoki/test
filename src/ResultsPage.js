@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/solid';
@@ -15,15 +15,12 @@ const ResultsPage = () => {
   const [trafficData, setTrafficData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [apiCallStatus, setApiCallStatus] = useState('idle');
   const navigate = useNavigate();
   const location = useLocation();
-  const apiCallMade = useRef(false);
 
   const fetchData = useCallback(async () => {
-    if (apiCallMade.current || apiCallStatus !== 'idle') return;
-	}, [location.search, apiCallStatus]); 
+    if (apiCallStatus !== 'idle') return;
     
     setApiCallStatus('pending');
     const searchParams = new URLSearchParams(location.search);
@@ -58,7 +55,6 @@ const ResultsPage = () => {
 
       if (data.status === 'OK') {
         setTrafficData(data);
-        apiCallMade.current = true;
         setApiCallStatus('success');
         console.log('API call successful, data received');
       } else {
@@ -71,16 +67,11 @@ const ResultsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [location.search]);
+  }, [location.search, apiCallStatus]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
-    return () => clearInterval(timer);
-  }, []);
 
   const getCurrentDayData = () => {
     if (!trafficData || !trafficData.analysis) return null;
@@ -90,7 +81,6 @@ const ResultsPage = () => {
     const currentDay = new Date(currentLocalTime).getDay();
     const dayData = trafficData.analysis[currentDay];
     
-    // Reverse the array and shift it so that it starts from 00:00
     const reversedData = [...dayData.day_raw].reverse();
     const shiftedData = [...reversedData.slice(1), reversedData[0]];
     
