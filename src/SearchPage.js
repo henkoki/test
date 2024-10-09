@@ -49,7 +49,10 @@ const SearchPage = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
-        <h1 className="text-3xl font-bold mb-8 text-center text-blue-600">GymSpotCheck</h1>
+        <div className="flex items-center justify-center mb-8">
+          <h1 className="text-3xl font-bold text-blue-600 mr-2">Gym Traffic</h1>
+          <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">LIVE</span>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="gym-name-input" className="block text-lg font-medium text-gray-700 mb-2">
