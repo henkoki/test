@@ -15,14 +15,10 @@ const ResultsPage = () => {
   const [trafficData, setTrafficData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [apiCallStatus, setApiCallStatus] = useState('idle');
   const navigate = useNavigate();
   const location = useLocation();
 
   const fetchData = useCallback(async () => {
-    if (apiCallStatus !== 'idle') return;
-    
-    setApiCallStatus('pending');
     const searchParams = new URLSearchParams(location.search);
     const venueName = searchParams.get('name');
     const venueAddress = searchParams.get('address');
@@ -30,19 +26,21 @@ const ResultsPage = () => {
     if (!venueName || !venueAddress) {
       setError('Venue information is missing.');
       setLoading(false);
-      setApiCallStatus('error');
       return;
     }
 
     try {
       const apiUrl = `https://besttime.app/api/v1/forecasts`;
       const params = new URLSearchParams({
-        'api_key_private': 'pri_070565f833f9459aad223978a7a19b74',
+        'api_key_private': 'pri_638bf64b8d4c4db680a3ad4657f069f1',
         'venue_name': venueName,
         'venue_address': venueAddress
       });
 
       console.log('Making API call to BestTime');
+      console.log('Venue Name:', venueName);
+      console.log('Venue Address:', venueAddress);
+
       const response = await fetch(`${apiUrl}?${params}`, {
         method: 'POST',
       });
@@ -55,19 +53,17 @@ const ResultsPage = () => {
 
       if (data.status === 'OK') {
         setTrafficData(data);
-        setApiCallStatus('success');
-        console.log('API call successful, data received');
+        console.log('API call successful, data received:', data);
       } else {
         throw new Error(data.message || 'Failed to fetch data');
       }
     } catch (err) {
       console.error('Error fetching data:', err);
       setError(err.message || 'An error occurred while fetching data');
-      setApiCallStatus('error');
     } finally {
       setLoading(false);
     }
-  }, [location.search, apiCallStatus]);
+  }, [location.search]);
 
   useEffect(() => {
     fetchData();
@@ -83,12 +79,15 @@ const ResultsPage = () => {
     
     const currentHour = new Date(currentLocalTime).getHours();
     
-    return dayData.day_raw.map((value, index) => ({
-      hour: index,
-      traffic: value,
-      label: `${index.toString().padStart(2, '0')}:00`,
-      isCurrentHour: index === currentHour
-    }));
+    return dayData.day_raw.map((value, index) => {
+      const hour = (23 - index + 24) % 24; // Map from 23:00 to 22:00
+      return {
+        hour,
+        traffic: value,
+        label: `${hour.toString().padStart(2, '0')}:00`,
+        isCurrentHour: hour === currentHour
+      };
+    }).reverse(); // Reverse the array to start from 00:00
   };
 
   const getOpeningHours = () => {
@@ -150,7 +149,7 @@ const ResultsPage = () => {
           <Tooltip formatter={(value) => `${value}%`} />
           <Bar dataKey="traffic">
             {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.isCurrentHour ? '#ff7f50' : '#8884d8'} />
+              <Cell key={`cell-${index}`} fill={entry.isCurrentHour ? '#ff0000' : '#8884d8'} />
             ))}
           </Bar>
         </BarChart>
@@ -262,7 +261,7 @@ const ResultsPage = () => {
             {renderVenueInfo()}
             <div className="mb-4">
               <h2 className="text-xl font-semibold inline-block mr-2">Gym Equipment Usage</h2>
-              <span className="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">Live</span>
+              <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded animate-pulse">LIVE</span>
             </div>
             {renderEquipmentUsageCards()}
             {renderSurgeHoursCard()}
