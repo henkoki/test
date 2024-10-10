@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/solid';
 
 const GYM_EQUIPMENT = [
@@ -15,14 +15,12 @@ const ResultsPage = () => {
   const [trafficData, setTrafficData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [apiCallStatus, setApiCallStatus] = useState('idle');
   const navigate = useNavigate();
   const location = useLocation();
-  const apiCallMade = useRef(false);
 
   const fetchData = useCallback(async () => {
-    if (apiCallMade.current || apiCallStatus !== 'idle') return;
+    if (apiCallStatus !== 'idle') return;
     
     setApiCallStatus('pending');
     const searchParams = new URLSearchParams(location.search);
@@ -57,7 +55,6 @@ const ResultsPage = () => {
 
       if (data.status === 'OK') {
         setTrafficData(data);
-        apiCallMade.current = true;
         setApiCallStatus('success');
         console.log('API call successful, data received');
       } else {
@@ -70,16 +67,11 @@ const ResultsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [location.search]);
+  }, [location.search, apiCallStatus]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
-    return () => clearInterval(timer);
-  }, []);
 
   const getCurrentDayData = () => {
     if (!trafficData || !trafficData.analysis) return null;
@@ -89,14 +81,13 @@ const ResultsPage = () => {
     const currentDay = new Date(currentLocalTime).getDay();
     const dayData = trafficData.analysis[currentDay];
     
-    // Reverse the array and shift it so that it starts from 00:00
-    const reversedData = [...dayData.day_raw].reverse();
-    const shiftedData = [...reversedData.slice(1), reversedData[0]];
+    const currentHour = new Date(currentLocalTime).getHours();
     
-    return shiftedData.map((value, index) => ({
+    return dayData.day_raw.map((value, index) => ({
       hour: index,
       traffic: value,
-      label: `${index.toString().padStart(2, '0')}:00`
+      label: `${index.toString().padStart(2, '0')}:00`,
+      isCurrentHour: index === currentHour
     }));
   };
 
@@ -157,7 +148,11 @@ const ResultsPage = () => {
           />
           <YAxis />
           <Tooltip formatter={(value) => `${value}%`} />
-          <Bar dataKey="traffic" fill="#8884d8" />
+          <Bar dataKey="traffic">
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.isCurrentHour ? '#ff7f50' : '#8884d8'} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     );
