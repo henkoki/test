@@ -80,6 +80,8 @@ const SearchPage = () => {
         <meta name="description" content="Check real-time gym occupancy and foot traffic for fitness centers in the Netherlands. Plan your workout with up-to-date information on gym crowdedness." />
         <meta name="keywords" content="gym traffic, gym occupancy, fitness center crowdedness, Netherlands gyms, workout planning" />
         <link rel="canonical" href="https://www.gymtraffic.live" />
+        <meta charSet="utf-8" />
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3843629117429973" crossOrigin="anonymous"></script>
       </Helmet>
       <main className="min-h-screen bg-gray-100 flex flex-col justify-between">
         <div className="flex-grow flex items-center justify-center px-4">
