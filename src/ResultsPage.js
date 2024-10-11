@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/solid';
+import { Helmet } from 'react-helmet';
 
 const GYM_EQUIPMENT = [
   { name: 'Cardio Zone', percentage: 40, subcategories: ['Treadmills', 'Ellipticals', 'Stationary Bikes', 'Stair Climbers'] },
@@ -242,42 +243,60 @@ const ResultsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-6xl mx-auto">
-        <button
-          onClick={() => navigate('/')}
-          className="mb-6 text-blue-600 hover:text-blue-800"
-        >
-          &larr; Back to Search
-        </button>
+    <>
+      <Helmet>
+        <title>{trafficData ? `${trafficData.venue_info.venue_name} Traffic | Gym Occupancy` : 'Gym Traffic Results'}</title>
+        <meta name="description" content={trafficData ? `Check real-time occupancy and foot traffic for ${trafficData.venue_info.venue_name} in ${trafficData.venue_info.venue_address}. Plan your workout with up-to-date crowdedness information.` : 'View gym traffic and occupancy information for fitness centers in the Netherlands.'} />
+        <meta name="keywords" content={`gym traffic, ${trafficData?.venue_info.venue_name}, gym occupancy, fitness center crowdedness, Netherlands gyms, workout planning`} />
+        <link rel="canonical" href={`https://www.gymtraffic.live/results?name=${encodeURIComponent(trafficData?.venue_info.venue_name || '')}&address=${encodeURIComponent(trafficData?.venue_info.venue_address || '')}`} />
+      </Helmet>
+      <main className="min-h-screen bg-gray-100 p-8">
+        <div className="max-w-6xl mx-auto">
+          <nav>
+            <button
+              onClick={() => navigate('/')}
+              className="mb-6 text-blue-600 hover:text-blue-800"
+            >
+              &larr; Back to Search
+            </button>
+          </nav>
 
-        {loading && (
-          <div className="text-center text-gray-600">
-            Loading traffic data...
-          </div>
-        )}
-
-        {error && (
-          <div className="text-center text-red-500 mb-4">
-            <p>Error: {error}</p>
-          </div>
-        )}
-
-        {trafficData && !loading && !error && (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            {renderVenueInfo()}
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold inline-block mr-2">Gym Equipment Usage</h2>
-              <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded animate-pulse">LIVE</span>
+          {loading && (
+            <div className="text-center text-gray-600">
+              <p>Loading traffic data...</p>
             </div>
-            {renderEquipmentUsageCards()}
-            {renderSurgeHoursCard()}
-            <h2 className="text-xl font-semibold mb-4">Today's popular visiting hours</h2>
-            {renderForecastChart()}
-          </div>
-        )}
-      </div>
-    </div>
+          )}
+
+          {error && (
+            <div className="text-center text-red-500 mb-4">
+              <p>Error: {error}</p>
+            </div>
+          )}
+
+          {trafficData && !loading && !error && (
+            <article className="bg-white rounded-lg shadow-md p-6">
+              <header>
+                <h1 className="text-2xl font-bold mb-4">{trafficData.venue_info.venue_name} Traffic Information</h1>
+              </header>
+              {renderVenueInfo()}
+              <section>
+                <h2 className="text-xl font-semibold inline-block mr-2">Gym Equipment Usage</h2>
+                <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded animate-pulse">LIVE</span>
+                {renderEquipmentUsageCards()}
+              </section>
+              {renderSurgeHoursCard()}
+              <section>
+                <h2 className="text-xl font-semibold mb-4">Today's popular visiting hours</h2>
+                {renderForecastChart()}
+              </section>
+            </article>
+          )}
+        </div>
+      </main>
+      <footer className="text-center py-4 text-gray-500 text-sm">
+        <p>Data provided by GymTraffic.live | Contact: <a href="mailto:gymtraffic.live@gmail.com" className="text-blue-600 hover:underline">gymtraffic.live@gmail.com</a></p>
+      </footer>
+    </>
   );
 };
 

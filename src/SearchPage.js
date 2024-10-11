@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 const SearchPage = () => {
   const [gymName, setGymName] = useState('');
@@ -73,60 +74,62 @@ const SearchPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
-      <div className="flex-grow flex items-center justify-center px-4">
-        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
-          <div className="flex items-center justify-center mb-8">
-            <h1 className="text-3xl font-bold text-blue-600 mr-2">Gym Traffic</h1>
-            <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">LIVE</span>
-          </div>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <div className="flex items-center mb-2">
-                <label htmlFor="gym-name-input" className="block text-lg font-medium text-gray-700 mr-2">
-                  Gym, Fitness Center, or Health Club
+    <>
+      <Helmet>
+        <title>Gym Traffic | Real-time Gym Occupancy in the Netherlands</title>
+        <meta name="description" content="Check real-time gym occupancy and foot traffic for fitness centers in the Netherlands. Plan your workout with up-to-date information on gym crowdedness." />
+        <meta name="keywords" content="gym traffic, gym occupancy, fitness center crowdedness, Netherlands gyms, workout planning" />
+        <link rel="canonical" href="https://www.gymtraffic.live" />
+      </Helmet>
+      <main className="min-h-screen bg-gray-100 flex flex-col justify-between">
+        <div className="flex-grow flex items-center justify-center px-4">
+          <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
+            <h1 className="text-3xl font-bold text-blue-600 text-center mb-8">Gym Traffic <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">LIVE</span></h1>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label htmlFor="gym-name-input" className="block text-lg font-medium text-gray-700 mb-2">
+                  Gym, Fitness Center, or Health Club in the Netherlands
                 </label>
-                <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">NL only</span>
+                <input
+                  id="gym-name-input"
+                  type="text"
+                  value={gymName}
+                  onChange={(e) => setGymName(e.target.value)}
+                  className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Search for a gym in the Netherlands"
+                  required
+                />
               </div>
-              <input
-                id="gym-name-input"
-                type="text"
-                value={gymName}
-                onChange={(e) => setGymName(e.target.value)}
-                className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Search for a gym in the Netherlands"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="gym-address-input" className="block text-lg font-medium text-gray-700 mb-2">
-                Gym Address
-              </label>
-              <input
-                id="gym-address-input"
-                type="text"
-                value={gymAddress}
-                readOnly
-                className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md bg-gray-100"
-                placeholder="Address will appear here"
-              />
-            </div>
-            {error && (
-              <div className="text-red-500 text-sm">{error}</div>
-            )}
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-3 px-6 rounded-md text-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              See Foot Traffic
-            </button>
-          </form>
+              <div>
+                <label htmlFor="gym-address-input" className="block text-lg font-medium text-gray-700 mb-2">
+                  Gym Address
+                </label>
+                <input
+                  id="gym-address-input"
+                  type="text"
+                  value={gymAddress}
+                  readOnly
+                  className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md bg-gray-100"
+                  placeholder="Address will appear here"
+                />
+              </div>
+              {error && (
+                <div className="text-red-500 text-sm">{error}</div>
+              )}
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-3 px-6 rounded-md text-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                See Foot Traffic
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
-      <div className="text-center py-4 text-gray-500 text-sm">
-        Contact for issues: <a href="mailto:gymtraffic.live@gmail.com" className="text-blue-600 hover:underline">gymtraffic.live@gmail.com</a>
-      </div>
-    </div>
+        <footer className="text-center py-4 text-gray-500 text-sm">
+          <p>Contact for issues: <a href="mailto:gymtraffic.live@gmail.com" className="text-blue-600 hover:underline">gymtraffic.live@gmail.com</a></p>
+        </footer>
+      </main>
+    </>
   );
 };
 
