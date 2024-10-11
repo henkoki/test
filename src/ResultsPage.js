@@ -77,26 +77,26 @@ const ResultsPage = () => {
   }, [fetchData]);
 
 
-  const getCurrentDayData = () => {
-    if (!trafficData || !trafficData.analysis) return null;
+	const getCurrentDayData = () => {
+	  if (!trafficData || !trafficData.analysis) return null;
 
-    const gymTimezone = trafficData.venue_info.venue_timezone || 'Europe/Amsterdam';
-    const currentLocalTime = new Date().toLocaleString('en-US', { timeZone: gymTimezone });
-    const currentDay = new Date(currentLocalTime).getDay();
-    const dayData = trafficData.analysis[currentDay];
-    
-    const currentHour = new Date(currentLocalTime).getHours();
-    
-    return dayData.day_raw.map((value, index) => {
-      const hour = (23 - index + 24) % 24; // Map from 23:00 to 22:00
-      return {
-        hour,
-        traffic: value,
-        label: `${hour.toString().padStart(2, '0')}:00`,
-        isCurrentHour: hour === currentHour
-      };
-    }).reverse(); // Reverse the array to start from 00:00
-  };
+	  const gymTimezone = trafficData.venue_info.venue_timezone || 'Europe/Amsterdam';
+	  const currentLocalTime = new Date().toLocaleString('en-US', { timeZone: gymTimezone });
+	  const currentDay = new Date(currentLocalTime).getDay();
+	  const dayData = trafficData.analysis[currentDay];
+	  
+	  const currentHour = new Date(currentLocalTime).getHours();
+	  
+	  // Reverse the array to map correctly from 00:00 to 23:00
+	  const reversedData = [...dayData.day_raw].reverse();
+	  
+	  return reversedData.map((value, index) => ({
+		hour: index,
+		traffic: value,
+		label: `${index.toString().padStart(2, '0')}:00`,
+		isCurrentHour: index === currentHour
+	  }));
+	};
 
   const getOpeningHours = () => {
     if (!trafficData || !trafficData.analysis) return '';
@@ -134,36 +134,36 @@ const ResultsPage = () => {
     return currentHour >= venue_open && currentHour < venue_closed;
   };
 
-  const renderForecastChart = () => {
-    const chartData = getCurrentDayData();
-    if (!chartData) return <p>No data available for today</p>;
+	const renderForecastChart = () => {
+	  const chartData = getCurrentDayData();
+	  if (!chartData) return <p>No data available for today</p>;
 
-    return (
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis 
-            dataKey="label" 
-            interval={1} 
-            tick={({ x, y, payload }) => (
-              <g transform={`translate(${x},${y})`}>
-                <text x={0} y={0} dy={16} textAnchor="middle" fill="#666" transform="rotate(-35)">
-                  {payload.value}
-                </text>
-              </g>
-            )}
-          />
-          <YAxis domain={[0, 100]} /> {/* Fixed Y-axis range from 0 to 100 */}
-          <Tooltip formatter={(value) => `${value}%`} />
-          <Bar dataKey="traffic">
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.isCurrentHour ? '#ff0000' : '#8884d8'} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    );
-  };
+	  return (
+		<ResponsiveContainer width="100%" height={400}>
+		  <BarChart data={chartData}>
+			<CartesianGrid strokeDasharray="3 3" />
+			<XAxis 
+			  dataKey="label" 
+			  interval={1} 
+			  tick={({ x, y, payload }) => (
+				<g transform={`translate(${x},${y})`}>
+				  <text x={0} y={0} dy={16} textAnchor="middle" fill="#666" transform="rotate(-35)">
+					{payload.value}
+				  </text>
+				</g>
+			  )}
+			/>
+			<YAxis domain={[0, 100]} />
+			<Tooltip formatter={(value) => `${value}%`} />
+			<Bar dataKey="traffic">
+			  {chartData.map((entry, index) => (
+				<Cell key={`cell-${index}`} fill={entry.isCurrentHour ? '#ff0000' : '#8884d8'} />
+			  ))}
+			</Bar>
+		  </BarChart>
+		</ResponsiveContainer>
+	  );
+	};
 
   const renderVenueInfo = () => {
     if (!trafficData || !trafficData.venue_info) return null;
