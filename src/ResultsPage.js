@@ -45,6 +45,12 @@ const ResultsPage = () => {
         method: 'POST',
       });
 
+      if (response.status === 404) {
+        setError("Venue found, but could not forecast this venue. Potential issues: This place is too new, or not does not have enough volume (visitors) to make a forecast. If you think otherwise, please contact gymtraffic.live@gmail.com");
+        setLoading(false);
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -68,6 +74,7 @@ const ResultsPage = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
 
   const getCurrentDayData = () => {
     if (!trafficData || !trafficData.analysis) return null;
@@ -145,7 +152,7 @@ const ResultsPage = () => {
               </g>
             )}
           />
-          <YAxis />
+          <YAxis domain={[0, 100]} /> {/* Fixed Y-axis range from 0 to 100 */}
           <Tooltip formatter={(value) => `${value}%`} />
           <Bar dataKey="traffic">
             {chartData.map((entry, index) => (

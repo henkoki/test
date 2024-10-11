@@ -32,12 +32,10 @@ const SearchPage = () => {
       document.getElementById('gym-name-input'),
       { 
         types: ['establishment'],
-        strictBounds: false,
-        fields: ['place_id', 'geometry', 'name', 'formatted_address', 'address_components'],
+        componentRestrictions: { country: 'nl' },
+        fields: ['place_id', 'geometry', 'name', 'formatted_address', 'address_components', 'types'],
       }
     );
-
-    autocomplete.setTypes(['gym']);
 
     autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace();
@@ -46,36 +44,19 @@ const SearchPage = () => {
         return;
       }
 
+      // Check if the place is a gym or fitness-related establishment
+      const gymRelatedTypes = ['gym', 'health', 'fitness'];
+      const isGymRelated = place.types.some(type => 
+        gymRelatedTypes.some(gymType => type.toLowerCase().includes(gymType))
+      );
+
+      if (!isGymRelated) {
+        setError('Please select a gym or fitness-related establishment.');
+        return;
+      }
+
       setGymName(place.name);
-
-      // Construct a more detailed address
-      let detailedAddress = '';
-      let streetNumber = '';
-      let route = '';
-      let sublocality = '';
-
-      for (const component of place.address_components) {
-        const componentType = component.types[0];
-
-        switch (componentType) {
-          case 'street_number':
-            streetNumber = component.long_name;
-            break;
-          case 'route':
-            route = component.long_name;
-            break;
-          case 'sublocality_level_1':
-            sublocality = component.long_name;
-            break;
-        }
-      }
-
-      detailedAddress = `${streetNumber} ${route}`.trim();
-      if (sublocality) {
-        detailedAddress += ` ${sublocality}`;
-      }
-
-      setGymAddress(detailedAddress);
+      setGymAddress(place.formatted_address);
       setError('');
     });
 
@@ -92,50 +73,58 @@ const SearchPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
-        <div className="flex items-center justify-center mb-8">
-          <h1 className="text-3xl font-bold text-blue-600 mr-2">Gym Traffic</h1>
-          <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">LIVE</span>
+    <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
+      <div className="flex-grow flex items-center justify-center px-4">
+        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
+          <div className="flex items-center justify-center mb-8">
+            <h1 className="text-3xl font-bold text-blue-600 mr-2">Gym Traffic</h1>
+            <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">LIVE</span>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <div className="flex items-center mb-2">
+                <label htmlFor="gym-name-input" className="block text-lg font-medium text-gray-700 mr-2">
+                  Gym, Fitness Center, or Health Club
+                </label>
+                <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">NL only</span>
+              </div>
+              <input
+                id="gym-name-input"
+                type="text"
+                value={gymName}
+                onChange={(e) => setGymName(e.target.value)}
+                className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Search for a gym in the Netherlands"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="gym-address-input" className="block text-lg font-medium text-gray-700 mb-2">
+                Gym Address
+              </label>
+              <input
+                id="gym-address-input"
+                type="text"
+                value={gymAddress}
+                readOnly
+                className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md bg-gray-100"
+                placeholder="Address will appear here"
+              />
+            </div>
+            {error && (
+              <div className="text-red-500 text-sm">{error}</div>
+            )}
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-3 px-6 rounded-md text-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              See Foot Traffic
+            </button>
+          </form>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="gym-name-input" className="block text-lg font-medium text-gray-700 mb-2">
-              Gym, Fitness Center, or Health Club
-            </label>
-            <input
-              id="gym-name-input"
-              type="text"
-              value={gymName}
-              onChange={(e) => setGymName(e.target.value)}
-              className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Search for a gym"
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="gym-address-input" className="block text-lg font-medium text-gray-700 mb-2">
-              Gym Address
-            </label>
-            <input
-              id="gym-address-input"
-              type="text"
-              value={gymAddress}
-              readOnly
-              className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md bg-gray-100"
-              placeholder="Address will appear here"
-            />
-          </div>
-          {error && (
-            <div className="text-red-500 text-sm">{error}</div>
-          )}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-3 px-6 rounded-md text-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            See Foot Traffic
-          </button>
-        </form>
+      </div>
+      <div className="text-center py-4 text-gray-500 text-sm">
+        Contact for issues: <a href="mailto:gymtraffic.live@gmail.com" className="text-blue-600 hover:underline">gymtraffic.live@gmail.com</a>
       </div>
     </div>
   );
