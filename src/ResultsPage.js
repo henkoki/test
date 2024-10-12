@@ -77,26 +77,29 @@ const ResultsPage = () => {
   }, [fetchData]);
 
 
-	const getCurrentDayData = () => {
-	  if (!trafficData || !trafficData.analysis) return null;
+const getCurrentDayData = () => {
+  if (!trafficData || !trafficData.analysis) return null;
 
-	  const gymTimezone = trafficData.venue_info.venue_timezone || 'Europe/Amsterdam';
-	  const currentLocalTime = new Date().toLocaleString('en-US', { timeZone: gymTimezone });
-	  const currentDay = new Date(currentLocalTime).getDay();
-	  const dayData = trafficData.analysis[currentDay];
-	  
-	  const currentHour = new Date(currentLocalTime).getHours();
-	  
-	  // Reverse the array to map correctly from 00:00 to 23:00
-	  const reversedData = [...dayData.day_raw].reverse();
-	  
-	  return reversedData.map((value, index) => ({
-		hour: index,
-		traffic: value,
-		label: `${index.toString().padStart(2, '0')}:00`,
-		isCurrentHour: index === currentHour
-	  }));
-	};
+  const gymTimezone = trafficData.venue_info.venue_timezone || 'Europe/Amsterdam';
+  const currentLocalTime = new Date().toLocaleString('en-US', { timeZone: gymTimezone });
+  const currentDay = new Date(currentLocalTime).getDay();
+  const dayData = trafficData.analysis[currentDay];
+  
+  const currentHour = new Date(currentLocalTime).getHours();
+  
+  // Rearrange the data to start from 00:00
+  const rearrangedData = [
+    ...dayData.day_raw.slice(18), // 00:00 to 05:00
+    ...dayData.day_raw.slice(0, 18) // 06:00 to 23:00
+  ];
+  
+  return rearrangedData.map((value, index) => ({
+    hour: index,
+    traffic: value,
+    label: `${index.toString().padStart(2, '0')}:00`,
+    isCurrentHour: index === currentHour
+  }));
+};
 
   const getOpeningHours = () => {
     if (!trafficData || !trafficData.analysis) return '';
