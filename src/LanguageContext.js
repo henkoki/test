@@ -4,7 +4,7 @@ import { translations } from './translations';
 const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState('nl'); // Default to Dutch
+  const [language, setLanguage] = useState('en'); // Default to Dutch
 
   const toggleLanguage = () => {
     setLanguage(prevLang => prevLang === 'nl' ? 'en' : 'nl');
