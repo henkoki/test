@@ -11,6 +11,12 @@ const SearchPage = () => {
   const [autocomplete, setAutocomplete] = useState(null);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  
+  <script type="text/javascript">
+      aclib.runPop({
+          zoneId: '8892450',
+      });
+  </script>
 
   useEffect(() => {
     const loadGoogleMapsScript = () => {
