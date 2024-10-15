@@ -13,9 +13,9 @@ const SearchPage = () => {
   const navigate = useNavigate();
   
   <script type="text/javascript">
-    aclib.runAutoTag({
-        zoneId: 'fmpmxhywxh',
-    });
+      aclib.runPop({
+          zoneId: '8892450',
+      });
   </script>
 
   useEffect(() => {
