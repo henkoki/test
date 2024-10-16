@@ -1,0 +1,38 @@
+export const translations = {
+  en: {
+    // English translations
+    gymTrafficWorldwide: "Gym Traffic Worldwide",
+    searchWorldwideGym: "Search for any gym traffic around the world",
+    profile: "Profile",
+    username: "Username",
+    email: "Email",
+    memberSince: "Member Since",
+    accountType: "Account Type",
+    premium: "Premium",
+    free: "Free",
+    upgradeToPremium: "Upgrade to Premium",
+    logout: "Logout",
+    loading: "Loading...",
+    userNotFound: "User not found",
+    premiumPurchaseSuccess: "Successfully upgraded to Premium!",
+    premiumPurchaseError: "Error upgrading to Premium. Please try again.",
+  },
+  nl: {
+    // Dutch translations
+    gymTrafficWorldwide: "Sportschoolverkeer Wereldwijd",
+    searchWorldwideGym: "Zoek naar sportschoolverkeer over de hele wereld",
+    profile: "Profiel",
+    username: "Gebruikersnaam",
+    email: "E-mail",
+    memberSince: "Lid sinds",
+    accountType: "Accounttype",
+    premium: "Premium",
+    free: "Gratis",
+    upgradeToPremium: "Upgraden naar Premium",
+    logout: "Uitloggen",
+    loading: "Laden...",
+    userNotFound: "Gebruiker niet gevonden",
+    premiumPurchaseSuccess: "Succesvol geüpgraded naar Premium!",
+    premiumPurchaseError: "Fout bij upgraden naar Premium. Probeer het opnieuw.",
+  },
+};
