@@ -13,7 +13,7 @@ const InfoPage = () => {
           <ol className="list-decimal pl-6 space-y-4">
             <li>
               <h3 className="font-semibold">{t('Search Your Gym')}</h3>
-              <p>{t('Simply enter your gyms name or search by location to find gyms near you or anywhere in the world.')}</p>
+              <p>{t('Simply enter your gym’s name or search by location to find gyms near you or anywhere in the world.')}</p>
             </li>
             <li>
               <h3 className="font-semibold">{t('Check the Traffic')}</h3>
@@ -22,6 +22,31 @@ const InfoPage = () => {
             <li>
               <h3 className="font-semibold">{t('Hit the Gym with Confidence')}</h3>
               <p>{t('With up-to-the-minute traffic data, you can walk into the gym with confidence, ready to work out without any delays.')}</p>
+            </li>
+          </ol>
+        </section>
+        
+        {/* Adding spacing between the two sections */}
+        <div className="mt-8"></div>
+
+        <section>
+          <h2 className="text-2xl font-semibold mb-4 text-blue-600">{t('Account Types:')}</h2>
+          <ol className="list-decimal pl-6 space-y-4">
+            <li>
+              <h3 className="font-semibold">{t('Not registered users')}</h3>
+              <p>{t('Can search 1 time a week.')}</p>
+              <p>{t('Advertising enabled.')}</p>
+            </li>
+            <li>
+              <h3 className="font-semibold">{t('Registered users')}</h3>
+              <p>{t('Can search 3 times a week.')}</p>
+              <p>{t('Advertising enabled.')}</p>
+            </li>
+            <li>
+              <h3 className="font-semibold">{t('Premium users')}</h3>
+              <p>{t('Can search unlimited times a week.')}</p>
+              <p>{t('Advertising disabled.')}</p>
+              <p>{t('Premium can be bought in your profile.')}</p>
             </li>
           </ol>
         </section>

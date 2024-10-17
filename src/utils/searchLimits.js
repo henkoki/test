@@ -1,26 +1,34 @@
 import { db } from '../firebase';
 import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 
-const DAILY_LIMITS = {
+const WEEKLY_LIMITS = {
   unregistered: 1,
-  registered: 2,
+  registered: 3,
   premium: Infinity
 };
 
+const getWeekStart = () => {
+  const now = new Date();
+  const dayOfWeek = now.getUTCDay();
+  const diff = now.getUTCDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+  return new Date(now.setUTCDate(diff)).toISOString().split('T')[0];
+};
+
 export const checkAndUpdateSearchLimit = async (userId) => {
+  const weekStart = getWeekStart();
+
   if (!userId) {
     // Unregistered user
     const lastSearch = localStorage.getItem('lastUnregisteredSearch');
     const searchCount = parseInt(localStorage.getItem('unregisteredSearchCount') || '0', 10);
-    const now = new Date().getTime();
 
-    if (lastSearch && now - parseInt(lastSearch, 10) < 24 * 60 * 60 * 1000) {
-      if (searchCount >= DAILY_LIMITS.unregistered) {
+    if (lastSearch && lastSearch >= weekStart) {
+      if (searchCount >= WEEKLY_LIMITS.unregistered) {
         return false;
       }
       localStorage.setItem('unregisteredSearchCount', (searchCount + 1).toString());
     } else {
-      localStorage.setItem('lastUnregisteredSearch', now.toString());
+      localStorage.setItem('lastUnregisteredSearch', weekStart);
       localStorage.setItem('unregisteredSearchCount', '1');
     }
     return true;
@@ -34,45 +42,44 @@ export const checkAndUpdateSearchLimit = async (userId) => {
   }
 
   const userData = userSnap.data();
-  const now = new Date();
-  const today = now.toISOString().split('T')[0];
 
   if (userData.isPremium) {
     return true; // Premium users have unlimited searches
   }
 
-  const limit = DAILY_LIMITS.registered;
+  const limit = WEEKLY_LIMITS.registered;
 
-  if (userData.lastSearchDate === today) {
-    if (userData.searchCount >= limit) {
-      return false; // User has reached their daily limit
+  if (userData.lastSearchWeek === weekStart) {
+    if (userData.weeklySearchCount >= limit) {
+      return false; // User has reached their weekly limit
     } else {
       // Increment search count
       await updateDoc(userRef, {
-        searchCount: userData.searchCount + 1
+        weeklySearchCount: (userData.weeklySearchCount || 0) + 1
       });
       return true;
     }
   } else {
-    // It's a new day, reset the count
+    // It's a new week, reset the count
     await updateDoc(userRef, {
-      lastSearchDate: today,
-      searchCount: 1
+      lastSearchWeek: weekStart,
+      weeklySearchCount: 1
     });
     return true;
   }
 };
 
 export const getSearchesRemaining = async (userId) => {
+  const weekStart = getWeekStart();
+
   if (!userId) {
     const lastSearch = localStorage.getItem('lastUnregisteredSearch');
     const searchCount = parseInt(localStorage.getItem('unregisteredSearchCount') || '0', 10);
-    const now = new Date().getTime();
 
-    if (lastSearch && now - parseInt(lastSearch, 10) < 24 * 60 * 60 * 1000) {
-      return Math.max(0, DAILY_LIMITS.unregistered - searchCount);
+    if (lastSearch && lastSearch >= weekStart) {
+      return Math.max(0, WEEKLY_LIMITS.unregistered - searchCount);
     }
-    return DAILY_LIMITS.unregistered;
+    return WEEKLY_LIMITS.unregistered;
   }
 
   const userRef = doc(db, 'users', userId);
@@ -83,17 +90,16 @@ export const getSearchesRemaining = async (userId) => {
   }
 
   const userData = userSnap.data();
-  const today = new Date().toISOString().split('T')[0];
 
   if (userData.isPremium) {
     return Infinity;
   }
 
-  if (userData.lastSearchDate === today) {
-    return Math.max(0, DAILY_LIMITS.registered - (userData.searchCount || 0));
+  if (userData.lastSearchWeek === weekStart) {
+    return Math.max(0, WEEKLY_LIMITS.registered - (userData.weeklySearchCount || 0));
   }
 
-  return DAILY_LIMITS.registered;
+  return WEEKLY_LIMITS.registered;
 };
 
 export const resetSearchCount = async (userId) => {
@@ -103,8 +109,8 @@ export const resetSearchCount = async (userId) => {
   } else {
     const userRef = doc(db, 'users', userId);
     await updateDoc(userRef, {
-      lastSearchDate: null,
-      searchCount: 0
+      lastSearchWeek: null,
+      weeklySearchCount: 0
     });
   }
 };
