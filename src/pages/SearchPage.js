@@ -137,7 +137,7 @@ const initAutocomplete = () => {
       </form>
       {recentSearch && (
         <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-2 text-gray-700">{t('Recent Search')}</h2>
+          <h2 className="text-lg font-semibold mb-2 text-gray-700">{t('Recent Searches')}</h2>
           <p className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer transition-colors duration-200 break-words"
              onClick={() => {
                const [name, address] = recentSearch.split(', ');
