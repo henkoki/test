@@ -27,10 +27,12 @@ const SearchPage = () => {
       script.onload = initAutocomplete;
     };
 
+  if (!window.google) {
     loadGoogleMapsScript();
-    loadRecentSearch();
-    updateSearchesRemaining();
-  }, [user]);
+  } else {
+    initAutocomplete();
+  }
+}, []);
 
   const updateSearchesRemaining = async () => {
     const remaining = await getSearchesRemaining(user?.uid);
