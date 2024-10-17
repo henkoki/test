@@ -56,13 +56,15 @@ const initAutocomplete = () => {
     if (!place.geometry) return;
 
     const gymKeywords = ['gym', 'fitness', 'health club', 'workout', 'training'];
+    const placeName = place.name.toLowerCase();
     const isGymRelated = gymKeywords.some(keyword => 
-      place.name.toLowerCase().includes(keyword)
+      placeName.includes(keyword.toLowerCase())
     );
 
     if (isGymRelated) {
       setGymName(place.name);
       setGymAddress(place.formatted_address);
+      setError(''); // Clear any previous error
     } else {
       setError(t('Please select a gym or fitness-related place'));
       setGymName('');
