@@ -7,16 +7,18 @@
     <loc>https://gymtraffic.live/howitworks</loc>
   </url>
   <url>
-    <loc>https://your-domain.com/results</loc>
+    <loc>https://gymtraffic.live/results</loc>
   </url>
   <url>
-    <loc>https://your-domain.com/profile</loc>
+    <loc>https://gymtraffic.live/profile</loc>
   </url>
   <url>
-    <loc>https://your-domain.com/info</loc>
+    <loc>https://gymtraffic.live/info</loc>
   </url>
   <url>
-    <loc>https://your-domain.com/login</loc>
+    <loc>https://gymtraffic.live/login</loc>
   </url>
-  <!-- Add more URLs for all your routes -->
+  <url>
+    <loc>https://gymtraffic.live/register</loc>
+  </url>
 </urlset>
