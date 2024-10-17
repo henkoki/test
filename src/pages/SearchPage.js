@@ -60,7 +60,8 @@ const initAutocomplete = () => {
     const isGymRelated = gymKeywords.some(keyword => 
       placeName.includes(keyword.toLowerCase())
     );
-
+	console.log('Place name:', place.name);
+	console.log('Is gym related:', isGymRelated);
     if (isGymRelated) {
       setGymName(place.name);
       setGymAddress(place.formatted_address);
