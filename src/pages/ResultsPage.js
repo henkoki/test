@@ -50,7 +50,7 @@ const ResultsPage = () => {
         setTrafficData(data);
         setError(null);
       } else if (data.status === 'Error' && data.message) {
-        setError(t('errorVenueNotFound'));
+        setError(t('Venue found, but could not forecast this venue. Potential issues: This place is too new, or not does not have enough volume (visitors) to make a forecast.'));
       } else {
         throw new Error(t('failedToFetchData'));
       }

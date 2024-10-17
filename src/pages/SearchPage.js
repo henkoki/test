@@ -39,30 +39,39 @@ const SearchPage = () => {
     setSearchesRemaining(remaining);
   };
 
-  const initAutocomplete = () => {
-    if (!window.google) return;
+const initAutocomplete = () => {
+  if (!window.google) return;
 
-    const autocomplete = new window.google.maps.places.Autocomplete(
-      document.getElementById('gym-name-input'),
-      { 
-        types: ['establishment'],
-        strictBounds: false,
-        fields: ['place_id', 'geometry', 'name', 'formatted_address'],
-      }
+  const autocomplete = new window.google.maps.places.Autocomplete(
+    document.getElementById('gym-name-input'),
+    { 
+      types: ['establishment'],
+      strictBounds: false,
+      fields: ['place_id', 'geometry', 'name', 'formatted_address'],
+    }
+  );
+
+  autocomplete.addListener('place_changed', () => {
+    const place = autocomplete.getPlace();
+    if (!place.geometry) return;
+
+    const gymKeywords = ['gym', 'fitness', 'health club', 'workout', 'training'];
+    const isGymRelated = gymKeywords.some(keyword => 
+      place.name.toLowerCase().includes(keyword)
     );
 
-    autocomplete.setTypes(['gym']);
-
-    autocomplete.addListener('place_changed', () => {
-      const place = autocomplete.getPlace();
-      if (!place.geometry) return;
-
+    if (isGymRelated) {
       setGymName(place.name);
       setGymAddress(place.formatted_address);
-    });
+    } else {
+      setError(t('Please select a gym or fitness-related place'));
+      setGymName('');
+      setGymAddress('');
+    }
+  });
 
-    setAutocomplete(autocomplete);
-  };
+  setAutocomplete(autocomplete);
+};
 
   const loadRecentSearch = () => {
     const recentSearches = getSearchHistory();
