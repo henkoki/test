@@ -147,10 +147,10 @@ const SearchPage = () => {
       )}
       <p className="mt-4 text-sm text-gray-600">
         {user?.isPremium
-          ? t('premiumUserUnlimitedSearches')
+          ? t('For any matters contact GymTraffic.live@gmail.com')
           : user
-          ? t('', { count: searchesRemaining })
-          : t('', { count: searchesRemaining })}
+          ? t('For any matters contact GymTraffic.live@gmail.com', { count: searchesRemaining })
+          : t('For any matters contact GymTraffic.live@gmail.com', { count: searchesRemaining })}
       </p>
     </Layout>
   );

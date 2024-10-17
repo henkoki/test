@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const Header = () => {
   const { t, language, setLanguage } = useLanguage();
-  const { user, logout } = useAuth(); // Assuming you have a logout function in your AuthContext
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -30,9 +30,11 @@ const Header = () => {
             </Link>
             <nav className="ml-10 flex space-x-4">
               <Link to="/" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">{t('Home')}</Link>
-			  <Link to="/info" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">{t('Info')}</Link>
-			  <Link to="/howitworks" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">{t('How it works')}</Link>
-              <Link to="/search-history" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">{t('Search history')}</Link>
+              <Link to="/info" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">{t('Info')}</Link>
+              <Link to="/howitworks" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">{t('How it works')}</Link>
+              {user && (
+                <Link to="/search-history" className="text-gray-700 hover:text-blue-600 transition-colors duration-200">{t('Search history')}</Link>
+              )}
             </nav>
           </div>
           <div className="flex items-center space-x-4">
