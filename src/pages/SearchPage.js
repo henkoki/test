@@ -55,19 +55,9 @@ const initAutocomplete = () => {
     const place = autocomplete.getPlace();
     if (!place.geometry) return;
 
-    const gymKeywords = ['gym', 'fitness', 'health club', 'workout', 'training'];
-    const isGymRelated = gymKeywords.some(keyword => 
-      place.name.toLowerCase().includes(keyword)
-    );
-
-    if (isGymRelated) {
-      setGymName(place.name);
-      setGymAddress(place.formatted_address);
-    } else {
-      setError(t('Please select a gym or fitness-related place'));
-      setGymName('');
-      setGymAddress('');
-    }
+    setGymName(place.name);
+    setGymAddress(place.formatted_address);
+    setError(''); // Clear any previous error
   });
 
   setAutocomplete(autocomplete);
@@ -83,7 +73,7 @@ const initAutocomplete = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
+	console.log('Is gym related before:', isGymRelated);
     try {
       const canSearch = await checkAndUpdateSearchLimit(user?.uid);
       if (!canSearch) {
@@ -94,6 +84,8 @@ const initAutocomplete = () => {
       if (gymName && gymAddress) {
         addToSearchHistory(`${gymName}, ${gymAddress}`);
         navigate(`/results?name=${encodeURIComponent(gymName)}&address=${encodeURIComponent(gymAddress)}`);
+		console.log('Place name:', place.name);
+		console.log('Is gym related:', isGymRelated);
       }
       
       // Update searches remaining
