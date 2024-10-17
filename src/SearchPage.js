@@ -26,35 +26,31 @@ const SearchPage = () => {
     loadGoogleMapsScript();
   }, [t]);
 
-  const initAutocomplete = () => {
-    if (!window.google) {
-      setError(t('googleMapsFailedToInitialize'));
-      return;
+const initAutocomplete = () => {
+  if (!window.google) return;
+
+  const autocomplete = new window.google.maps.places.Autocomplete(
+    document.getElementById('gym-name-input'),
+    { 
+      types: ['establishment'],
+      strictBounds: false,
+      fields: ['place_id', 'geometry', 'name', 'formatted_address'],
     }
+  );
 
-    const autocomplete = new window.google.maps.places.Autocomplete(
-      document.getElementById('gym-name-input'),
-      { 
-        types: ['establishment'],
-        componentRestrictions: { country: 'nl' },
-        fields: ['place_id', 'geometry', 'name', 'formatted_address'],
-      }
-    );
+  // Set the types to search for gym-related establishments
+  autocomplete.setTypes(['gym', 'health']);
 
-    autocomplete.addListener('place_changed', () => {
-      const place = autocomplete.getPlace();
-      if (!place.geometry) {
-        setError(t('noDetailsAvailableForThisGym'));
-        return;
-      }
+  autocomplete.addListener('place_changed', () => {
+    const place = autocomplete.getPlace();
+    if (!place.geometry) return;
 
-      setGymName(place.name);
-      setGymAddress(place.formatted_address);
-      setError('');
-    });
+    setGymName(place.name);
+    setGymAddress(place.formatted_address);
+  });
 
-    setAutocomplete(autocomplete);
-  };
+  setAutocomplete(autocomplete);
+};
 
   const handleSubmit = (e) => {
     e.preventDefault();
