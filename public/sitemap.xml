@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://gymtraffic.live/</loc>
+  </url>
+  <url>
+    <loc>https://gymtraffic.live/howitworks</loc>
+  </url>
+  <url>
+    <loc>https://your-domain.com/results</loc>
+  </url>
+  <url>
+    <loc>https://your-domain.com/profile</loc>
+  </url>
+  <url>
+    <loc>https://your-domain.com/info</loc>
+  </url>
+  <url>
+    <loc>https://your-domain.com/login</loc>
+  </url>
+  <!-- Add more URLs for all your routes -->
+</urlset>

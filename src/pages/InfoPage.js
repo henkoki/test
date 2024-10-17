@@ -52,7 +52,6 @@ const InfoPage = () => {
             <li>{t('Stay Ahead: Be in control—always one step ahead of the crowd with GymTraffic.live.')}</li>
           </ul>
         </section>
-		
       </div>
     </Layout>
   );
