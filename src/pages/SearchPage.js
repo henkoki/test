@@ -55,9 +55,19 @@ const initAutocomplete = () => {
     const place = autocomplete.getPlace();
     if (!place.geometry) return;
 
-    setGymName(place.name);
-    setGymAddress(place.formatted_address);
-    setError(''); // Clear any previous error
+    const gymKeywords = ['gym', 'fitness', 'health club', 'workout', 'training'];
+    const isGymRelated = gymKeywords.some(keyword => 
+      place.name.toLowerCase().includes(keyword)
+    );
+
+    if (isGymRelated) {
+      setGymName(place.name);
+      setGymAddress(place.formatted_address);
+    } else {
+      setError(t('Please select a gym or fitness-related place'));
+      setGymName('');
+      setGymAddress('');
+    }
   });
 
   setAutocomplete(autocomplete);
@@ -73,6 +83,7 @@ const initAutocomplete = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
     try {
       const canSearch = await checkAndUpdateSearchLimit(user?.uid);
       if (!canSearch) {
@@ -134,7 +145,7 @@ const initAutocomplete = () => {
       </form>
       {recentSearch && (
         <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-2 text-gray-700">{t('Recent Searches')}</h2>
+          <h2 className="text-lg font-semibold mb-2 text-gray-700">{t('Recent Search')}</h2>
           <p className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer transition-colors duration-200 break-words"
              onClick={() => {
                const [name, address] = recentSearch.split(', ');
