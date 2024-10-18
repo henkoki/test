@@ -9,6 +9,8 @@ import ProfilePage from './pages/ProfilePage';
 import SuccessPage from './pages/SuccessPage';
 import InfoPage from './pages/InfoPage';
 import HowItWorks from './pages/HowItWorks'
+import AnswersPage from './pages/AnswersPage';
+
 
 const AppRoutes = () => {
   return (
@@ -22,6 +24,8 @@ const AppRoutes = () => {
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/success" element={<SuccessPage />} />
 	  <Route path="/howitworks" element={<HowItWorks />} />
+	  <Route path="/answers" element={<AnswersPage />} />
+
     </Routes>
   );
 };
