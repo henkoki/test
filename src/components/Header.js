@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { Star } from 'lucide-react'; // Import the Star icon
 
 const Header = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -16,6 +17,12 @@ const Header = () => {
       <Link to="/info" className="text-gray-700 hover:text-blue-600 px-3 py-2">{t('Info')}</Link>
       <Link to="/howitworks" className="text-gray-700 hover:text-blue-600 px-3 py-2">{t('How it works')}</Link>
       {user && <Link to="/search-history" className="text-gray-700 hover:text-blue-600 px-3 py-2">{t('Search history')}</Link>}
+      {user && (
+        <Link to="/favorites" className="text-gray-700 hover:text-blue-600 px-3 py-2 flex items-center">
+          <Star className="mr-1" size={18} />
+          {t('Favorites')}
+        </Link>
+      )}
     </>
   );
 
