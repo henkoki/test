@@ -10,6 +10,8 @@ import SuccessPage from './pages/SuccessPage';
 import InfoPage from './pages/InfoPage';
 import HowItWorks from './pages/HowItWorks'
 import AnswersPage from './pages/AnswersPage';
+import FavoritesPage from './pages/FavoritesPage';
+
 
 
 const AppRoutes = () => {
@@ -25,6 +27,7 @@ const AppRoutes = () => {
       <Route path="/success" element={<SuccessPage />} />
 	  <Route path="/howitworks" element={<HowItWorks />} />
 	  <Route path="/answers" element={<AnswersPage />} />
+	  <Route path="/favorites" element={<FavoritesPage />} />
 
     </Routes>
   );

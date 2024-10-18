@@ -3,7 +3,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/solid';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useFavorites } from '../contexts/FavoritesContext';
 import Layout from '../components/Layout';
+import { Star } from 'lucide-react';
 
 const GYM_EQUIPMENT = [
   { name: 'Cardio Zone', percentage: 40, subcategories: ['Treadmills', 'Ellipticals', 'Stationary Bikes', 'Stair Climbers'] },
@@ -15,9 +18,12 @@ const GYM_EQUIPMENT = [
 
 const ResultsPage = () => {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const { addFavorite, removeFavorite, favorites } = useFavorites();
   const [trafficData, setTrafficData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -64,6 +70,38 @@ const ResultsPage = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+  
+    useEffect(() => {
+    if (trafficData && trafficData.venue_info) {
+      const { venue_name, venue_address } = trafficData.venue_info;
+      const gymId = `${venue_name}-${venue_address}`.replace(/\s+/g, '-').toLowerCase();
+      setIsFavorite(favorites.some(fav => fav.id === gymId));
+    }
+  }, [trafficData, favorites]);
+
+  const handleToggleFavorite = () => {
+    if (!trafficData || !trafficData.venue_info) return;
+
+    const { venue_name, venue_address } = trafficData.venue_info;
+    const gymId = `${venue_name}-${venue_address}`.replace(/\s+/g, '-').toLowerCase();
+
+    console.log('Toggling favorite for gym:', gymId);
+
+    if (isFavorite) {
+      console.log('Removing from favorites');
+      removeFavorite(gymId);
+    } else {
+      console.log('Adding to favorites');
+      addFavorite({
+        id: gymId,
+        name: venue_name,
+        address: venue_address,
+      });
+    }
+
+    setIsFavorite(!isFavorite);
+  };
+
 
 const getCurrentDayData = () => {
   if (!trafficData || !trafficData.analysis) return null;
@@ -123,20 +161,31 @@ const renderForecastChart = () => {
   );
 };
 
-  const renderVenueInfo = () => {
+ const renderVenueInfo = () => {
     if (!trafficData || !trafficData.venue_info) return null;
 
     const { venue_name, venue_address, venue_timezone } = trafficData.venue_info;
 
     return (
       <div className="mb-8 bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">{t('Gym Information')}</h2>
+        <div className="flex justify-between items-start">
+          <h2 className="text-xl font-semibold mb-4">{t('Gym Information')}</h2>
+          {user && (
+            <button
+              onClick={handleToggleFavorite}
+              className={`ml-2 ${isFavorite ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-500`}
+            >
+              <Star size={24} fill={isFavorite ? 'currentColor' : 'none'} />
+            </button>
+          )}
+        </div>
         <p><strong>{t('Name')}:</strong> {venue_name}</p>
         <p><strong>{t('Address')}:</strong> {venue_address}</p>
         <p><strong>{t('Timezone')}:</strong> {venue_timezone}</p>
       </div>
     );
   };
+
 
   const getCurrentTrafficPercentage = () => {
     if (!trafficData || !trafficData.analysis) return 0;
@@ -145,33 +194,34 @@ const renderForecastChart = () => {
     return currentDayData ? currentDayData.find(data => data.hour === currentHour)?.traffic || 0 : 0;
   };
 
-const renderEquipmentUsageCards = () => {
-  const currentTrafficPercentage = getCurrentTrafficPercentage();
+  const renderEquipmentUsageCards = () => {
+    const currentTrafficPercentage = getCurrentTrafficPercentage();
 
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-      {GYM_EQUIPMENT.map((equipment, index) => {
-        const usage = (equipment.percentage / 100) * currentTrafficPercentage;
-        return (
-          <div key={index} className="bg-white rounded-lg shadow-sm p-4 relative">
-            <h3 className="text-sm font-semibold mb-1">{t(equipment.name)}</h3>
-            <p className="text-2xl font-bold text-blue-600">{usage.toFixed(1)}%</p>
-            <div className="absolute top-1 right-1 group">
-              <QuestionMarkCircleIcon className="h-4 w-4 text-gray-400 hover:text-gray-600" />
-              <div className="hidden group-hover:block absolute right-0 w-40 p-2 bg-white border rounded shadow-lg z-10 text-xs">
-                <ul className="list-disc pl-3">
-                  {equipment.subcategories.map((sub, idx) => (
-                    <li key={idx}>{t(sub)}</li>
-                  ))}
-                </ul>
+    return (
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        {GYM_EQUIPMENT.map((equipment, index) => {
+          const usage = (equipment.percentage / 100) * currentTrafficPercentage;
+          return (
+            <div key={index} className="bg-white rounded-lg shadow-sm p-4 relative">
+              <h3 className="text-sm font-semibold mb-1">{t(equipment.name)}</h3>
+              <p className="text-2xl font-bold text-blue-600">{usage.toFixed(1)}%</p>
+              <div className="absolute top-1 right-1 group">
+                <QuestionMarkCircleIcon className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                <div className="hidden group-hover:block absolute right-0 w-40 p-2 bg-white border rounded shadow-lg z-10 text-xs">
+                  <ul className="list-disc pl-3">
+                    {equipment.subcategories.map((sub, idx) => (
+                      <li key={idx}>{t(sub)}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
+          );
+        })}
+      </div>
+    );
+  };
+  
   const renderSurgeHoursCard = () => {
     if (!trafficData || !trafficData.analysis) return null;
     const currentDay = new Date().getDay();
