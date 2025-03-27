@@ -13,7 +13,7 @@ export const LanguageProvider = ({ children }) => {
         // English translations
         home: 'Home',
         searchHistory: 'Search History',
-		searchGym: 'Real Time Local Gym Traffic at Your Fingertips',
+		searchGym: 'Real Time Gym Traffic at Your Fingertips with help of AI',
         login: 'Login',
         register: 'Register',
         // Add more translations as needed
