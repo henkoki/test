@@ -19,6 +19,10 @@ const InfoPage = () => {
             <h3 className="font-semibold">{t('Check the Traffic')}</h3>
             <p>{t('View real-time data showing gym occupancy and equipment availability, so you know exactly what to expect before you head out.')}</p>
           </li>
+	  z<li>
+            <h3 className="font-semibold">{t('How is it different to any other foot traffic analyzer?')}</h3>
+            <p>{t('We are using custom trained AI models to gather the foot traffic data from various sources, analyze it and provide with the most accurate results')}</p>
+          </li>
           <li>
             <h3 className="font-semibold">{t('Hit the Gym with Confidence')}</h3>
             <p>{t('With up-to-the-minute traffic data, you can walk into the gym with confidence, ready to work out without any delays.')}</p>
